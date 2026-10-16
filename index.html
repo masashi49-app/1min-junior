@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fffaf3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="1min Junior ✨">
+  <meta name="description" content="1分でもOK。今日の小さなできた！を重ねよう。">
+  <title>1min Junior ✨</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+  <link rel="icon" href="./assets/icon-192.png">
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./core.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+<main>
+  <header><span class="brand">1min <b>Junior</b> ✨</span><span class="mini">ちいさな、できた！</span></header>
+  <section class="today-section" aria-labelledby="heading">
+    <p id="today-label" class="eyebrow"></p>
+    <h1 id="heading">1分でも<span>OK</span>。</h1>
+    <p class="intro">ひとつできたら、今日もはなまる。</p>
+    <div id="activities" class="activities"></div>
+    <p id="encouragement" class="encouragement" aria-live="polite"></p>
+  </section>
+  <section class="progress" aria-label="これまでの記録">
+    <div class="ring" aria-hidden="true">💍</div>
+    <div><p id="streak"></p><p id="total"></p></div>
+  </section>
+  <section class="calendar-section" aria-label="月間カレンダー">
+    <div class="month-header"><button id="prev" class="arrow" aria-label="前月">‹</button><h2 id="month-title" aria-live="polite"></h2><button id="next" class="arrow" aria-label="翌月">›</button></div>
+    <div id="calendar-swipe">
+      <div class="weekdays" aria-hidden="true"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
+      <div id="calendar" class="calendar"></div>
+    </div>
+    <div class="legend"><span>⭐ ひとつ</span><span>🌸 ふたつ</span><span><img class="tiara" src="./assets/tiara.png" alt="ティアラ"> みっつ</span></div>
+    <p class="hint">日付をタップして、記録をなおせるよ</p>
+  </section>
+  <details class="settings"><summary>記録のバックアップ</summary><div class="settings-body">
+    <p>記録はこの端末だけに保存されます。<br>ときどきバックアップしておこう。</p>
+    <button id="backup">JSONバックアップ</button>
+    <button id="restore">JSONから復元</button>
+    <button id="csv">CSV書き出し</button>
+    <input id="restore-file" type="file" accept=".json,application/json" hidden>
+    <p class="hint">保存先はpCloudなどの非公開フォルダへ。<br>ブラウザのデータを消すと記録も消えます。</p>
+  </div></details>
+  <footer>今日の1分が、明日のたからもの。</footer>
+  <p id="status" role="status" aria-live="polite"></p>
+  <noscript>このアプリにはJavaScriptが必要です。</noscript>
+</main>
+<dialog id="edit-dialog" aria-labelledby="edit-title"><form method="dialog">
+  <p class="eyebrow">この日の、できた！</p><h2 id="edit-title"></h2>
+  <div id="edit-activities" class="edit-activities"></div>
+  <div class="dialog-actions"><button value="cancel">やめる</button><button id="save-edit" type="button" class="primary">保存する</button></div>
+</form></dialog>
+</body></html>
