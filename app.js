@@ -12,6 +12,60 @@
     blocked = true;
     status('記録を読み込めませんでした。端末の保存設定を確認するか、JSONバックアップから復元してください。元の記録は上書きしていません。');
   }
+  const PROFILE_KEY = 'oneMinJunior.profile.v1';
+  let profile = {name:'',configured:false}, profileUnreadable = false;
+  try {
+    const stored = localStorage.getItem(PROFILE_KEY);
+    if(stored) {
+      const parsed = JSON.parse(stored);
+      if(!parsed || typeof parsed.name !== 'string' || typeof parsed.configured !== 'boolean') throw Error('invalid profile');
+      profile = {name:parsed.name.slice(0,20),configured:parsed.configured};
+    }
+  } catch { profileUnreadable=true; }
+  let previousGiftCount = C.giftProgress(C.stats(state.records).total).unlocked;
+  function saveProfile(name) {
+    const next={name:name.trim().slice(0,20),configured:true};
+    try {localStorage.setItem(PROFILE_KEY,JSON.stringify(next));profile=next;profileUnreadable=false;return true;}
+    catch {$('name-error').textContent='名前を保存できませんでした。端末の保存設定を確認してね。';return false;}
+  }
+  function openName() {
+    $('display-name').value=profile.name;$('name-error').textContent='';$('name-dialog').showModal();
+  }
+  $('name-button').addEventListener('click',openName);
+  $('name-form').addEventListener('submit',e=>{
+    e.preventDefault();
+    if(saveProfile($('display-name').value)){$('name-dialog').close();render();}
+  });
+  $('skip-name').addEventListener('click',()=>{
+    if(!profile.configured && !profileUnreadable && !saveProfile(''))return;
+    $('name-dialog').close();
+  });
+  function showGift(index,celebrating=false) {
+    if(index<0 || index>=C.giftProgress(C.stats(state.records).total).unlocked)return;
+    const [title,message]=C.gifts[index];
+    $('gift-days').textContent=celebrating ? `${(index+1)*10}日できたね！` : `${(index+1)*10}日のたからもの`;
+    $('gift-title').textContent=title;$('gift-message').textContent=message;
+    $('gift-art').innerHTML=C.giftArt(index);
+    if(!$('gift-dialog').open)$('gift-dialog').showModal();
+  }
+  function renderGifts(total) {
+    const progress=C.giftProgress(total);
+    $('next-gift').textContent=total>=100 ? '10このたからものが集まったよ！' : `あと${progress.remaining}日でプレゼント 🎁`;
+    $('gift-meter').value=total>=100?10:total%10;
+    $('gift-meter').setAttribute('aria-valuetext',total>=100?'100日達成':`あと${progress.remaining}日`);
+    $('gift-count').textContent=`${progress.unlocked} / 10`;
+    $('gift-grid').replaceChildren();
+    C.gifts.forEach(([title],i)=>{
+      const unlocked=i<progress.unlocked,b=document.createElement('button');
+      b.type='button';b.className='gift-tile';b.disabled=!unlocked;
+      b.setAttribute('aria-label',unlocked?`${(i+1)*10}日 ${title}`:`${(i+1)*10}日で開くカード`);
+      b.innerHTML=(unlocked?C.giftArt(i):'<span class="card-back" aria-hidden="true">✧</span>')+`<span class="gift-day">${(i+1)*10}日</span><span class="gift-label">${unlocked?title:'おたのしみ'}</span>`;
+      b.addEventListener('click',()=>showGift(i));$('gift-grid').append(b);
+    });
+    if(progress.unlocked>previousGiftCount && !document.querySelector('dialog[open]'))showGift(progress.unlocked-1,true);
+    previousGiftCount=progress.unlocked;
+  }
+  $('open-collection').addEventListener('click',()=>$('collection-dialog').showModal());
   let today = C.key(), displayed = C.date(today), editing = null, draft = null;
   displayed.setDate(1);
   function persist(next, restoring = false) {
@@ -45,6 +99,8 @@
   });
   function render() {
     today = C.key();
+    $('greeting').textContent=profile.name ? `${profile.name}さん、今日も1分から！` : '今日も、あなたのペースで。';
+    $('name-button').textContent=profile.name ? '名前をかえる' : '名前をつける';
     $('today-label').textContent = `きょうは ${pretty(today)}`;
     const r = state.records[today] || C.blank(), n = C.count(r);
     document.querySelectorAll('.activity').forEach(b => {
@@ -59,6 +115,7 @@
     $('streak').textContent = stats.streak ? `${stats.streak}日つづいてる！` : '0日・今日の1分から！';
     $('total').innerHTML = `これまで <strong>${stats.total}日</strong> できたよ`;
     renderCalendar();
+    renderGifts(stats.total);
   }
   function renderCalendar() {
     const y = displayed.getFullYear(), m = displayed.getMonth();
@@ -127,9 +184,11 @@
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDate();});
   window.addEventListener('focus',refreshDate);setInterval(refreshDate,30000);
   window.addEventListener('storage',e=>{
+    if(e.key===PROFILE_KEY){try{const p=e.newValue?JSON.parse(e.newValue):{name:'',configured:false};if(typeof p.name==='string' && typeof p.configured==='boolean'){profile={name:p.name.slice(0,20),configured:p.configured};render();}}catch{}return;}
     if(e.key!==KEY)return;
     try{state=e.newValue?C.validate(JSON.parse(e.newValue)):C.empty();blocked=false;if($('edit-dialog').open)$('edit-dialog').close();render();}catch{blocked=true;status('別の画面の記録を読み込めません。再起動してください。');}
   });
   render();
+  if(!profile.configured && !profileUnreadable && !blocked)openName();
   if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js',{scope:'./'}).catch(()=>status('オフラインの準備ができませんでした。オンラインで開き直してください。'));
 })();

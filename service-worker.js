@@ -1,5 +1,5 @@
 // Increment VERSION when releasing changed assets.
-const VERSION = 'v1.0.0';
+const VERSION = 'v1.1.0';
 const PREFIX = '1min-junior:' + self.registration.scope + ':';
 const CACHE = PREFIX + VERSION;
 const ASSETS = ['./','./index.html','./style.css','./core.js','./app.js','./manifest.json','./assets/tiara.png','./assets/icon-192.png','./assets/icon-512.png','./assets/icon-maskable.png','./assets/apple-touch-icon.png'];

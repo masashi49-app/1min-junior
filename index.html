@@ -19,6 +19,8 @@
 <body>
 <main>
   <header><span class="brand">1min <b>Junior</b> ✨</span><span class="mini">ちいさな、できた！</span></header>
+  <button id="name-button" class="name-button" type="button">名前をつける</button>
+  <p id="greeting" class="greeting"></p>
   <section class="today-section" aria-labelledby="heading">
     <p id="today-label" class="eyebrow"></p>
     <h1 id="heading">1分でも<span>OK</span>。</h1>
@@ -29,6 +31,11 @@
   <section class="progress" aria-label="これまでの記録">
     <div class="ring" aria-hidden="true">💍</div>
     <div><p id="streak"></p><p id="total"></p></div>
+  </section>
+  <section class="gift-progress" aria-label="次のプレゼント">
+    <p id="next-gift" aria-live="polite"></p>
+    <progress id="gift-meter" max="10" value="0" aria-label="次のプレゼントまで"></progress>
+    <button id="open-collection" type="button">たからもの <span id="gift-count">0 / 10</span> →</button>
   </section>
   <section class="calendar-section" aria-label="月間カレンダー">
     <div class="month-header"><button id="prev" class="arrow" aria-label="前月">‹</button><h2 id="month-title" aria-live="polite"></h2><button id="next" class="arrow" aria-label="翌月">›</button></div>
@@ -55,5 +62,24 @@
   <p class="eyebrow">この日の、できた！</p><h2 id="edit-title"></h2>
   <div id="edit-activities" class="edit-activities"></div>
   <div class="dialog-actions"><button value="cancel">やめる</button><button id="save-edit" type="button" class="primary">保存する</button></div>
+</form></dialog>
+<dialog id="name-dialog" aria-labelledby="name-title"><form id="name-form">
+  <p class="eyebrow">あなただけの1min</p><h2 id="name-title">なんて呼んでほしい？</h2>
+  <label for="display-name">呼んでほしい名前</label>
+  <input id="display-name" class="name-input" maxlength="20" autocomplete="off" placeholder="名前・ニックネーム" aria-describedby="name-help">
+  <p id="name-help" class="hint">名前はこの端末だけに保存するよ。<br>あとから変えられるよ。</p>
+  <p id="name-error" role="alert"></p>
+  <div class="dialog-actions"><button id="skip-name" type="button">あとで</button><button class="primary" type="submit">保存する</button></div>
+</form></dialog>
+<dialog id="collection-dialog" aria-labelledby="collection-title"><form method="dialog">
+  <p class="eyebrow">10日ずつ、たからものがふえる</p><h2 id="collection-title">たからもの</h2>
+  <div id="gift-grid" class="gift-grid"></div>
+  <p class="hint">集めたカードをタップして見てみよう</p>
+  <div class="dialog-actions"><button>閉じる</button></div>
+</form></dialog>
+<dialog id="gift-dialog" class="gift-dialog" aria-labelledby="gift-title"><form method="dialog">
+  <p id="gift-days" class="eyebrow"></p><div id="gift-art" class="gift-art"></div>
+  <h2 id="gift-title"></h2><p id="gift-message"></p>
+  <div class="dialog-actions"><button class="primary">たいせつにする</button></div>
 </form></dialog>
 </body></html>
